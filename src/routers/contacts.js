@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import * as contactControllers from '../controllers/contacts.js';
 import ctrlWrapper from '../utils/ctrlWrapper.js';
-
+import validateBody from '../utils/validateBody.js';
+import {
+  contactAddSchema,
+  contactUpdateSchema,
+} from '../validation/contacts.js';
 const contactsRouter = Router();
 
 contactsRouter.get(
@@ -12,13 +16,19 @@ contactsRouter.get(
   '/:id',
   ctrlWrapper(contactControllers.getContactByIdController),
 );
-contactsRouter.post('/', ctrlWrapper(contactControllers.addContactController));
+contactsRouter.post(
+  '/',
+  validateBody(contactAddSchema),
+  ctrlWrapper(contactControllers.addContactController),
+);
 contactsRouter.put(
   '/:id',
+  validateBody(contactAddSchema),
   ctrlWrapper(contactControllers.upsertContactController),
 );
 contactsRouter.patch(
   '/:id',
+  validateBody(contactUpdateSchema),
   ctrlWrapper(contactControllers.patchContactController),
 );
 contactsRouter.delete(
