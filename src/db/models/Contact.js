@@ -1,14 +1,15 @@
 import { Schema, model } from 'mongoose';
 import { enumList } from '../../constants/contacts.js';
+import { handleSaveError } from './hooks.js';
 const contactSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, 'name must be exist'],
     },
     phoneNumber: {
       type: String,
-      required: true,
+      required: [true, 'phoneNumber must be exist'],
     },
     email: {
       type: String,
@@ -17,18 +18,29 @@ const contactSchema = new Schema(
     isFavorite: {
       type: Boolean,
       default: false,
-      require: true,
+      require: [true, 'isFavorite must be exist'],
     },
     contactType: {
       type: String,
       enum: enumList,
-      required: true,
+      required: [true, 'contactType must be exist'],
       default: 'personal',
     },
   },
   { versionKey: false, timestamps: true },
 );
+contactSchema.post('save', handleSaveError);
 
 const ContactCollection = model('contact', contactSchema);
+
+export const sortFields = [
+  'name',
+  'phoneNumber',
+  'email',
+  'isFavorite',
+  'contactType',
+  'createdAt',
+  'updatedAt',
+];
 
 export default ContactCollection;
