@@ -6,7 +6,7 @@ import { handleSaveError } from './hooks.js';
 
 const userSchema = new Schema(
   {
-    username: {
+    name: {
       type: String,
       require: true,
     },
