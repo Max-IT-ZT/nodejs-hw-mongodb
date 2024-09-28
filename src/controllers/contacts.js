@@ -3,6 +3,11 @@ import createHttpError from 'http-errors';
 import parsePaginationParams from '../utils/parsePaginationParams.js';
 import parseSortParams from '../utils/parseSortParams.js';
 import { sortFields } from '../db/models/Contact.js';
+import saveFileToUploadDir from '../utils/saveFileToUploadDir.js';
+import saveFileToCloudinary from '../utils/saveFileToClaudinary.js';
+import { env } from '../utils/env.js';
+
+const enableCloudinary = env('ENABLE_CLOUDINARY');
 
 export const getAllContactsController = async (req, res, next) => {
   const { perPage, page } = parsePaginationParams(req.query);
@@ -37,8 +42,20 @@ export const getContactByIdController = async (req, res) => {
   });
 };
 export const addContactController = async (req, res) => {
+  let photo;
+  if (req.file) {
+    if (enableCloudinary === 'true') {
+      photo = await saveFileToCloudinary(req.file);
+    } else {
+      photo = await saveFileToUploadDir(req.file);
+    }
+  }
   const { _id: userId } = req.user;
-  const data = await contactServices.createContact({ ...req.body, userId });
+  const data = await contactServices.createContact({
+    ...req.body,
+    userId,
+    photo,
+  });
   res.status(201).json({
     status: 201,
     message: 'Contact add successfully',
