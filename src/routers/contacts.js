@@ -9,6 +9,7 @@ import {
   contactAddSchema,
   contactUpdateSchema,
 } from '../validation/contacts.js';
+import upload from '../middlewares/upload.js';
 const contactsRouter = Router();
 
 contactsRouter.use(authenticate);
@@ -24,6 +25,7 @@ contactsRouter.get(
 );
 contactsRouter.post(
   '/',
+  upload.single('photo'),
   validateBody(contactAddSchema),
   ctrlWrapper(contactControllers.addContactController),
 );
